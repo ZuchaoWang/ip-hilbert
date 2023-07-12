@@ -1,7 +1,7 @@
 import {
   hilbertQuartsToSquareRegion,
   hilbertQuartsToRectRegion,
-} from "./quart2hilbert";
+} from "../src/quart2hilbert";
 
 describe("hilbert square region", () => {
   it("can calculate bottom left at different quarts length", () => {

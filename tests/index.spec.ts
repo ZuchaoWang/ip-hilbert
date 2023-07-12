@@ -1,4 +1,4 @@
-import { add } from "./index";
+import { add } from "../src/index";
 
 describe("ip-hilbert", () => {
   it("should add correctly", () => {
