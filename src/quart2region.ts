@@ -51,48 +51,40 @@ function hilbertDrillDownHalf(s: Square, quart: number): Rect {
 }
 
 /**
- * Creates a descendant square region from a parent square region described by {x, y, size},
+ * Creates a descendant square region from a parent square region,
  * based on the leading quarts.
  *
- * @param x - The x-coordinate of the center of the initial parent square region.
- * @param y - The y-coordinate of the center of the initial parent square region.
- * @param size - The size of the initial parent square region.
+ * @param s - The parent square region.
  * @param leadingQuarts - The array of quarts used to select the descendant square region.
  */
 export function hilbertQuartsToSquareRegion(
-  x: number,
-  y: number,
-  size: number,
+  s: Square,
   leadingQuarts: number[]
 ): Square {
-  const s: Square = { xc: x, yc: y, size: size, angle: 0, flip: 1 };
+  const clonedSquare: Square = { ...s };  // cloning the square s
   for (let i = 0; i < leadingQuarts.length; i++) {
-    hilbertDrillDown(s, leadingQuarts[i]);
+    hilbertDrillDown(clonedSquare, leadingQuarts[i]);
   }
-  return s;
+  return clonedSquare;
 }
 
 /**
- * Creates a descendant rectangular region from a parent square region described by {x, y, size},
+ * Creates a descendant rectangular region from a parent square region,
  * based on the leading quarts and last quart.
  *
- * @param x - The x-coordinate of the center of the initial parent square region.
- * @param y - The y-coordinate of the center of the initial parent square region.
- * @param size - The size of the initial parent square region.
+ * @param s - The parent square region.
  * @param leadingQuarts - The array of quarts used to select the descendant square or rectangular region.
  * @param lastQuart - The optional last quart (undefined, 0, or 2) used to further refine the selected rectangular region.
  */
 export function hilbertQuartsToRectRegion(
-  x: number,
-  y: number,
-  size: number,
+  s: Square,
   leadingQuarts: number[],
   lastQuart?: number
 ): Rect {
-  const s = hilbertQuartsToSquareRegion(x, y, size, leadingQuarts);
+  const descendantSquare = hilbertQuartsToSquareRegion(s, leadingQuarts);
   if (lastQuart === undefined) {
-    return convertSquareToRect(s);
+    return convertSquareToRect(descendantSquare);
   } else {
-    return hilbertDrillDownHalf(s, lastQuart);
+    return hilbertDrillDownHalf(descendantSquare, lastQuart);
   }
 }
