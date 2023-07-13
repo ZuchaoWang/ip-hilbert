@@ -63,12 +63,12 @@ describe("hilbert square region", () => {
     // randomized test
     // with two steps, the second step can test non-default flip and angle
     
-    const N = 100; // N: number of test cases
-    const M = 10; // M: max order for generating quarts
+    const N = 100; // number of test cases
+    const M = 10; // max order for generating quarts
 
     for (let i = 0; i < N; i++) {
-      // Generate random order within the range of M
-      const order = Math.floor(Math.random() * M);
+      // Generate random order within the range of 1 ~ M
+      const order = Math.floor(Math.random() * M) + 1;
 
       // Create starting square
       const initialSquare: Square = {
@@ -170,5 +170,52 @@ describe("hilbert rect region", () => {
       width: 4,
       height: 2,
     });
+  });
+
+  it("produces same result when processing quarts in one or two steps", () => {
+    // randomized test
+    // with two steps, the second step can test non-default flip and angle
+    
+    const N = 100; // number of test cases
+    const M = 10; // max order for generating quarts
+
+    for (let i = 0; i < N; i++) {
+      // Generate random order within the range of 1 ~ M
+      const order = Math.floor(Math.random() * M) + 1;
+
+      // Create starting square
+      const initialSquare: Square = {
+        xc: Math.pow(2, order - 1),
+        yc: Math.pow(2, order - 1),
+        size: Math.pow(2, order),
+        angle: 0,
+        flip: 1,
+      };
+
+      // Determine if lastQuart is defined or undefined
+      let lastQuart: number | undefined = undefined;
+      if (Math.random() < 0.33) {
+        lastQuart = Math.floor(Math.random() * 2) * 2;
+      }
+
+      // Generate leadingQuarts considering the condition of lastQuart
+      const numQuarts = lastQuart === undefined
+        ? Math.floor(Math.random() * (order + 1))
+        : Math.floor(Math.random() * order);
+      const leadingQuarts = Array.from({ length: numQuarts }, () => Math.floor(Math.random() * 4));
+
+      // Process quarts in one step
+      const oneStepResult = hilbertQuartsToRectRegion(initialSquare, leadingQuarts, lastQuart);
+
+      // Process quarts in two steps
+      const splitPoint = Math.floor(Math.random() * leadingQuarts.length);
+      const firstStepQuarts = leadingQuarts.slice(0, splitPoint);
+      const secondStepQuarts = leadingQuarts.slice(splitPoint);
+      const firstStepResult = hilbertQuartsToSquareRegion(initialSquare, firstStepQuarts);
+      const twoStepResult = hilbertQuartsToRectRegion(firstStepResult, secondStepQuarts, lastQuart);
+
+      // The result should be the same for one-step and two-step processing
+      expect(oneStepResult).toEqual(twoStepResult);
+    }
   });
 });

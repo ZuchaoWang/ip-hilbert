@@ -1,3 +1,5 @@
+import { Prefix } from "./prefix";
+
 /**
  * Extract a quart (2-bit number) from the specified position within a byte array.
  *
@@ -26,4 +28,47 @@ export function extractQuartFromBytes(bytes: number[], i: number): number | unde
   let quart = (byte >> shiftAmount) & bitmask;
 
   return quart;
+}
+
+/**
+ * Converts a Prefix into quarts representation while skipping a specified number of initial quarts.
+ *
+ * @param {Prefix} prefix - An object containing 'bytes' representing the prefix and 'maskLen' representing the mask length.
+ * @param {number} numQuartsSkip - The number of initial quarts to skip.
+ * 
+ * @returns {Object | undefined} An object containing 'leadingQuarts' and 'lastQuart', where 'leadingQuarts' is an array of quarts and 'lastQuart' is the last quart or undefined. 
+ * If 'lastQuart' is defined, it must be 0 or 2, and indicates that the prefix corresponds to a rectangle on the Hilbert curve. 
+ * If 'lastQuart' is undefined, it indicates that the prefix corresponds to a square on the Hilbert curve.
+ * If 'numQuartsSkip' is greater than half of 'maskLen', the function returns undefined.
+ */
+export function convertPrefixToQuarts(prefix: Prefix, numQuartsSkip: number): { leadingQuarts: number[], lastQuart: number | undefined } | undefined {
+  // Extracting the bytes and mask length from the prefix
+  const { bytes, maskLen } = prefix;
+
+  if(numQuartsSkip < 0 || numQuartsSkip > Math.floor(maskLen / 2) || maskLen > bytes.length * 8) {
+    return undefined;
+  }
+
+  // Initializing an empty leadingQuarts array
+  const leadingQuarts: number[] = [];
+
+  // For each quart starting from the numQuartsSkip position up to half the mask length, 
+  // calculate the corresponding leadingQuart from the bytes and append to the leadingQuarts array
+  for (let i = numQuartsSkip; i < Math.floor(maskLen / 2); i++) {
+    leadingQuarts.push(extractQuartFromBytes(bytes, i)!);
+  }
+
+  // If the mask length is odd and numQuartsSkip is less than half the mask length, 
+  // there will be one remaining quart. Calculate this quart and store it in lastQuart.
+  // If the mask length is even, or numQuartsSkip is equal to half the mask length, 
+  // lastQuart will remain undefined
+  let lastQuart: number | undefined;
+  if (maskLen % 2 === 1) {
+    lastQuart = extractQuartFromBytes(bytes, Math.floor(maskLen / 2));
+  }
+
+  // Return the leadingQuarts and lastQuart
+  // If lastQuart is defined, it indicates that the prefix corresponds to a rectangle on the Hilbert curve
+  // If lastQuart is undefined, it indicates that the prefix corresponds to a square on the Hilbert curve
+  return { leadingQuarts, lastQuart };
 }
