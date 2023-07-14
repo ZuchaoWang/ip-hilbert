@@ -1,5 +1,5 @@
 import { convertPrefixToQuarts } from "../byte2quart";
-import { Prefix } from "../prefix";
+import { Prefix, isPrefixContain } from "../prefix";
 import { hilbertQuartsToRectRegion, hilbertQuartsToSquareRegion } from "../quart2region";
 import { Rect, Square } from "../region";
 import { HilbertMapper } from "./type";
@@ -47,19 +47,23 @@ export class SubnetHilbertMapper implements HilbertMapper {
   getWidth(): number {
     return this._subnetRectRegion.width / 2;  // used twice size to preserve integer precision, now half it
   }
-    
+
   getHeight(): number {
     return this._subnetRectRegion.height / 2;  // used twice size to preserve integer precision, now half it
   }
 
-  xyPosToPrefix(x: number, y: number): Prefix {
-    const x2 = x * 2; // use twice size to preserve integer precision
-    const y2 = y * 2; // use twice size to preserve integer precision
-    
+  xyPosToPrefix(x: number, y: number): Prefix | undefined {
+    const x2 = x * 2 + 1; // use twice size to preserve integer precision
+    const y2 = y * 2 + 1; // use twice size to preserve integer precision
+
   }
 
-  prefixToRectRegion(prefix: Prefix): Rect {
-    const rectRegion = calculateRectRegionWithinRefSquareRegion(this._refSquareRegion, this._refPrefix.maskLen / 2, prefix);
-    return { x: (rectRegion.x - this._subnetRectRegion.x) / 2, y: (rectRegion.y - this._subnetRectRegion.y) / 2, width: rectRegion.width / 2, height: rectRegion.height / 2 };  // used twice size to preserve integer precision, now half it
+  prefixToRectRegion(prefix: Prefix): Rect | undefined {
+    if (isPrefixContain(this._subnetPrefix, prefix)) {
+      const rectRegion = calculateRectRegionWithinRefSquareRegion(this._refSquareRegion, this._refPrefix.maskLen / 2, prefix);
+      return { x: (rectRegion.x - this._subnetRectRegion.x) / 2, y: (rectRegion.y - this._subnetRectRegion.y) / 2, width: rectRegion.width / 2, height: rectRegion.height / 2 };  // used twice size to preserve integer precision, now half it
+    } else {
+      return undefined;
+    }
   }
 }
