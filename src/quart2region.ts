@@ -1,4 +1,4 @@
-import { Rect, Square, convertSquareToRect } from "./region";
+import { Rect, Square, convertSquareToRect, isXYPosInSquare } from "./region";
 
 // Helper lookup tables, by quart and angle
 const cosTable = [1, 0, -1, 0];
@@ -15,7 +15,7 @@ const dflipTable = [-1, 1, 1, -1];
  * @param s - The parent square region.
  * @param quart - The quart (0, 1, 2, or 3) used to select the child square region.
  */
-function hilbertDrillDown(s: Square, quart: number) {
+function hilbertQuartToSquareRegionOneStep(s: Square, quart: number) {
   const ox = cosTable[s.angle];
   const oy = sinTable[s.angle];
   const dx = dxTable[quart];
@@ -38,7 +38,7 @@ function hilbertDrillDown(s: Square, quart: number) {
  * @param s - The parent square region.
  * @param quart - The quart (0 or 2) used to select the child rectangular region.
  */
-function hilbertDrillDownHalf(s: Square, quart: number): Rect {
+function hilbertQuartToHalfRectRegionOneStep(s: Square, quart: number): Rect {
   const ox = cosTable[s.angle];
   const oy = sinTable[s.angle];
   const dx = quart / 2 ? 1 : -1;
@@ -63,7 +63,7 @@ export function hilbertQuartsToSquareRegion(
 ): Square {
   const clonedSquare: Square = { ...s };  // cloning the square s
   for (let i = 0; i < leadingQuarts.length; i++) {
-    hilbertDrillDown(clonedSquare, leadingQuarts[i]);
+    hilbertQuartToSquareRegionOneStep(clonedSquare, leadingQuarts[i]);
   }
   return clonedSquare;
 }
@@ -85,6 +85,82 @@ export function hilbertQuartsToRectRegion(
   if (lastQuart === undefined) {
     return convertSquareToRect(descendantSquare);
   } else {
-    return hilbertDrillDownHalf(descendantSquare, lastQuart);
+    return hilbertQuartToHalfRectRegionOneStep(descendantSquare, lastQuart);
+  }
+}
+
+/**
+ * Convert a position (x, y) within a given square region to a sequence of quarts based on the Hilbert curve.
+ * This function starts by checking if the position is within the given square region. 
+ * If it is not, the function returns undefined. If it is, the function calls 
+ * hilbertXYPosToQuartInSquareRegionOneStep to perform a recursive calculation, which 
+ * determines the quart indices that represent the position in the Hilbert curve.
+ * 
+ * @param s - The square region within which the position is to be converted.
+ * @param x - The x-coordinate of the position.
+ * @param y - The y-coordinate of the position.
+ * @param depth - The depth of recursion, which determines the level of detail in the Hilbert curve.
+ * 
+ * @returns An array of quart indices if the position is within the square, undefined otherwise.
+ */
+export function hilbertXYPosToQuartsInSquareRegion(s: Square, x: number, y: number, depth: number): number[] | undefined {
+  const quarts: number[] = [];
+  const within = hilbertXYPosToQuartInSquareRegionOneStep(s, x, y, depth, quarts);
+  return within ? quarts : undefined;
+}
+
+/**
+ * A recursive helper function for hilbertXYPosToQuartsInSquareRegion.
+ *
+ * This function takes a square region and a point (x, y), and attempts to find
+ * the point within a child square of the current square. The function uses a depth-first
+ * search, traversing through the Hilbert curve path. If the point is found within a child
+ * square, the function returns true and the path to the point is stored in 'quarts'.
+ * If the point is not found, the function returns false.
+ *
+ * @param s - The current square region being examined.
+ * @param x - The x-coordinate of the point being searched for.
+ * @param y - The y-coordinate of the point being searched for.
+ * @param depth - The current depth of the recursive search.
+ * @param quarts - The array storing the path of quarts to the point.
+ * @returns - Boolean indicating whether the point was found within the current square 's'.
+ */
+function hilbertXYPosToQuartInSquareRegionOneStep(s: Square, x: number, y: number, depth: number, quarts: number[]) {
+  // Check if the point is within the current square region
+  if (!isXYPosInSquare(x, y, s)) {
+    return false;
+  } else if (depth === 0) {
+    return true;
+  } else {
+    // Check the four child squares
+    const clonedSquare: Square = { ...s };  // Clone the current square 
+
+    // Loop through each child square represented by quarts [0, 1, 2, 3]
+    for (let i = 0; i < 4; i++) {
+      // Add current quart to the path
+      quarts.push(i);
+
+      // Update the cloned square to the i-th child square
+      clonedSquare.xc = s.xc;
+      clonedSquare.yc = s.yc;
+      clonedSquare.size = s.size;
+      clonedSquare.angle = s.angle;
+      clonedSquare.flip = s.flip;
+      hilbertQuartToSquareRegionOneStep(clonedSquare, i);
+
+      // Recursive step: try to find the point in the updated child square
+      const within = hilbertXYPosToQuartInSquareRegionOneStep(clonedSquare, x, y, depth - 1, quarts);
+
+      // If the point is within this child square, return true and end the loop
+      if (within) {
+        return true;
+      }
+
+      // If the point is not in this child square, remove the current quart from the path
+      quarts.pop();
+    }
+
+    // If the point was not found in any of the child squares, return false
+    return false;
   }
 }

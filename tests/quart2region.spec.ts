@@ -2,6 +2,7 @@ import { Square } from "../src/region";
 import {
   hilbertQuartsToSquareRegion,
   hilbertQuartsToRectRegion,
+  hilbertXYPosToQuartsInSquareRegion,
 } from "../src/quart2region";
 
 describe("hilbert square region", () => {
@@ -61,8 +62,8 @@ describe("hilbert square region", () => {
 
   it("produces same result when processing quarts in one or two steps", () => {
     // randomized test
-    // with two steps, the second step can test non-default flip and angle
-    
+    // xc, yc not restricted to size /2, flip and angle not restricted to default
+
     const N = 100; // number of test cases
     const M = 10; // max order for generating quarts
 
@@ -72,11 +73,11 @@ describe("hilbert square region", () => {
 
       // Create starting square
       const initialSquare: Square = {
-        xc: Math.pow(2, order - 1),
-        yc: Math.pow(2, order - 1),
+        xc: Math.floor(Math.pow(2, order - 1) * (Math.random() * 2 - 1)),
+        yc: Math.floor(Math.pow(2, order - 1) * (Math.random() * 2 - 1)),
         size: Math.pow(2, order),
-        angle: 0,
-        flip: 1,
+        angle: Math.floor(Math.random() * 4),
+        flip: Math.random() < 0.5 ? -1 : 1
       };
 
       // Generate 0~order random quarts
@@ -174,8 +175,8 @@ describe("hilbert rect region", () => {
 
   it("produces same result when processing quarts in one or two steps", () => {
     // randomized test
-    // with two steps, the second step can test non-default flip and angle
-    
+    // xc, yc not restricted to size /2, flip and angle not restricted to default
+
     const N = 100; // number of test cases
     const M = 10; // max order for generating quarts
 
@@ -185,11 +186,11 @@ describe("hilbert rect region", () => {
 
       // Create starting square
       const initialSquare: Square = {
-        xc: Math.pow(2, order - 1),
-        yc: Math.pow(2, order - 1),
+        xc: Math.floor(Math.pow(2, order - 1) * (Math.random() * 2 - 1)),
+        yc: Math.floor(Math.pow(2, order - 1) * (Math.random() * 2 - 1)),
         size: Math.pow(2, order),
-        angle: 0,
-        flip: 1,
+        angle: Math.floor(Math.random() * 4),
+        flip: Math.random() < 0.5 ? -1 : 1
       };
 
       // Determine if lastQuart is defined or undefined
@@ -216,6 +217,67 @@ describe("hilbert rect region", () => {
 
       // The result should be the same for one-step and two-step processing
       expect(oneStepResult).toEqual(twoStepResult);
+    }
+  });
+});
+
+describe('hilbertXYPosToQuartsInSquareRegion', () => {
+  it('can handle basic cases', () => {
+    // Define the square
+    const s: Square = {xc: 2, yc: 2, size: 4, flip: 1, angle: 0};
+    const depth = 1;
+
+    // Define test cases
+    const testCases = [
+      {x: 0, y: 0, expected: [0]},
+      {x: 1, y: 1, expected: [0]},
+      {x: 2, y: 2, expected: [2]},
+      {x: 0, y: 2, expected: [1]},
+      {x: 2, y: 0, expected: [3]},
+      {x: -1, y: 3, expected: undefined},
+    ];
+
+    // Run each test case
+    for (const testCase of testCases) {
+      const {x, y, expected} = testCase;
+      expect(hilbertXYPosToQuartsInSquareRegion(s, x, y, depth)).toEqual(expected);
+    }
+  });
+
+  it('converts random positions within a rect to matching quarts', () => {
+    const N = 100; // Number of test cases
+    const M = 10; // Max number of order
+
+    for (let i = 0; i < N; i++) {
+      // Generate random parameters
+      const order = Math.floor(Math.random() * M) + 1;
+      const initialSquare: Square = {
+        xc: Math.floor(Math.pow(2, order - 1) * (Math.random() * 2 - 1)),
+        yc: Math.floor(Math.pow(2, order - 1) * (Math.random() * 2 - 1)),
+        size: Math.pow(2, order),
+        angle: Math.floor(Math.random() * 4),
+        flip: Math.random() < 0.5 ? -1 : 1
+      };
+
+      // Generate a random quart array
+      const quarts: number[] = [];
+      const quartsLen = Math.floor(Math.random() * (order + 1));
+      for (let j = 0; j < quartsLen; j++) {
+        quarts.push(Math.floor(Math.random() * 4));
+      }
+
+      // Calculate the corresponding square
+      const childSquare: Square = hilbertQuartsToSquareRegion(initialSquare, quarts);
+
+      // Choose a random position within this square
+      const testX = childSquare.xc + (Math.random() - 0.5) * childSquare.size;
+      const testY = childSquare.yc + (Math.random() - 0.5) * childSquare.size;
+
+      // Convert the position back to quarts
+      const testQuarts = hilbertXYPosToQuartsInSquareRegion(initialSquare, testX, testY, quartsLen);
+
+      // Assert that the test quarts match the original quarts and it's not undefined
+      expect(testQuarts).toEqual(quarts);
     }
   });
 });

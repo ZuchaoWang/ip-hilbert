@@ -1,4 +1,4 @@
-import { convertSquareToRect, Square } from "../src/region";
+import { convertSquareToRect, isXYPosInRect, isXYPosInSquare, Square } from "../src/region";
 
 describe("convertSquareToRect", () => {
   test(`pass random test cases`, () => {
@@ -25,5 +25,69 @@ describe("convertSquareToRect", () => {
       const rect = convertSquareToRect(square);
       expect(rect).toEqual({ x, y, width: size, height: size });
     }
+  });
+});
+
+describe("isXYPosInSquare function", () => {
+  it("should return true when the point is inside the square", () => {
+    const square = { xc: 5, yc: 5, size: 4, angle: 0, flip: 1 };
+    expect(isXYPosInSquare(4, 4, square)).toBeTruthy();
+  });
+
+  it("should return false when the point is outside the square", () => {
+    const square = { xc: 5, yc: 5, size: 4, angle: 0, flip: 1 };
+    expect(isXYPosInSquare(8, 8, square)).toBeFalsy();
+  });
+
+  it("should return true when the point is on the xmin boundary of the square", () => {
+    const square = { xc: 5, yc: 5, size: 4, angle: 0, flip: 1 };
+    expect(isXYPosInSquare(3, 4, square)).toBeTruthy();
+  });
+
+  it("should return true when the point is on the ymin boundary of the square", () => {
+    const square = { xc: 5, yc: 5, size: 4, angle: 0, flip: 1 };
+    expect(isXYPosInSquare(4, 3, square)).toBeTruthy();
+  });
+
+  it("should return false when the point is on the xmax boundary of the square", () => {
+    const square = { xc: 5, yc: 5, size: 4, angle: 0, flip: 1 };
+    expect(isXYPosInSquare(7, 4, square)).toBeFalsy();
+  });
+
+  it("should return false when the point is on the ymax boundary of the square", () => {
+    const square = { xc: 5, yc: 5, size: 4, angle: 0, flip: 1 };
+    expect(isXYPosInSquare(4, 7, square)).toBeFalsy();
+  });
+});
+
+describe("isXYPosInRect function", () => {
+  it("should return true when the point is inside the rectangle", () => {
+    const rect = { x: 2, y: 2, width: 4, height: 4 };
+    expect(isXYPosInRect(3, 3, rect)).toBeTruthy();
+  });
+
+  it("should return false when the point is outside the rectangle", () => {
+    const rect = { x: 2, y: 2, width: 4, height: 4 };
+    expect(isXYPosInRect(7, 7, rect)).toBeFalsy();
+  });
+
+  it("should return true when the point is on the xmin boundary of the rectangle", () => {
+    const rect = { x: 2, y: 2, width: 4, height: 4 };
+    expect(isXYPosInRect(2, 3, rect)).toBeTruthy();
+  });
+
+  it("should return true when the point is on the ymin boundary of the rectangle", () => {
+    const rect = { x: 2, y: 2, width: 4, height: 4 };
+    expect(isXYPosInRect(3, 2, rect)).toBeTruthy();
+  });
+
+  it("should return false when the point is on the xmax boundary of the rectangle", () => {
+    const rect = { x: 2, y: 2, width: 4, height: 4 };
+    expect(isXYPosInRect(6, 3, rect)).toBeFalsy();
+  });
+
+  it("should return false when the point is on the ymax boundary of the rectangle", () => {
+    const rect = { x: 2, y: 2, width: 4, height: 4 };
+    expect(isXYPosInRect(3, 6, rect)).toBeFalsy();
   });
 });

@@ -6,7 +6,6 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "test-debug": "node --inspect-brk -r ts-node/register ./node_modules/jest/bin/jest.js",
     "check": "eslint src/**/*.ts tests/**/*.ts && tsc --noEmit",
     "start": "webpack serve --mode development",
     "build-lib": "shx rm -rf dist && tsc --project tsconfig.build.json",
