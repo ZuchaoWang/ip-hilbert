@@ -81,7 +81,7 @@ export class SubnetHilbertMapper implements HilbertMapper {
    * This function validates the inputs and throws an error if they are not acceptable.
    */
   private _validateInputs() {
-    if (this._gridMaskLen % 2 === 0) {
+    if (this._gridMaskLen % 2) {
       throw new Error("SubnetHilbertMapper: gridMaskLen must be even, so that each grid is a square region");
     }
     if (this._gridMaskLen - this._subnetPrefix.maskLen > 15) {
