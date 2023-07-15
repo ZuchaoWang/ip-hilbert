@@ -16,7 +16,7 @@ export declare function extractQuartFromBytes(bytes: number[], i: number): numbe
  * @param {number} numQuartsSkip - The number of initial quarts to skip.
  *
  * @returns {Object | undefined} An object containing 'leadingQuarts' and 'lastBit', where 'leadingQuarts' is an array of quarts and 'lastBit' is the last bit or undefined.
- * 'lastBit' appears when prefix.maskLen is odd thus prefix cannot be represented by integer number of quarts (which requires prefix.maskLen to be even)
+ * 'lastBit' appears when prefix.maskLen is odd thus prefix cannot be represented by integer number of quarts (which requires prefix.maskLen to be even).
  * If 'lastBit' is defined, it must be 0 (left) or 1 (right), and indicates that the prefix corresponds to a rectangle on the Hilbert curve.
  * If 'lastBit' is undefined, it indicates that the prefix corresponds to a square on the Hilbert curve.
  * If 'numQuartsSkip' is greater than half of 'maskLen', the function returns undefined.

@@ -35,8 +35,8 @@ export declare class SubnetHilbertMapper implements HilbertMapper {
     private _subnetRectInternal;
     /**
      * Construct a SubnetHilbertMapper.
-     * @param subnetPrefix - Prefix of the subnet
-     * @param gridMaskLen - Mask length of each grid, must be even, at least as large as subnetPrefix.maskLen, but no larger than subnetPrefix.maskLen + 32
+     * @param subnetPrefix - Prefix of the subnet.
+     * @param gridMaskLen - Mask length of each grid, must be even, at least as large as `subnetPrefix.maskLen`, but no larger than `subnetPrefix.maskLen + 32`.
      */
     constructor(subnetPrefix: Prefix, gridMaskLen: number);
     /**
@@ -44,57 +44,57 @@ export declare class SubnetHilbertMapper implements HilbertMapper {
      */
     private _validateInputs;
     /**
-   * Convert a x-coordinate from grid to internal system
-   * @param x - The x-coordinate in grid system
-   * @returns The corresponding x-coordinate in internal system
+   * Convert a x-coordinate from grid to internal system.
+   * @param x - The x-coordinate in grid system.
+   * @returns The corresponding x-coordinate in internal system.
    */
     private _gridToInternalX;
     /**
-     * Convert a y-coordinate from grid to internal system
-     * @param y - The y-coordinate in grid system
-     * @returns The corresponding y-coordinate in internal system
+     * Convert a y-coordinate from grid to internal system.
+     * @param y - The y-coordinate in grid system.
+     * @returns The corresponding y-coordinate in internal system.
      */
     private _gridToInternalY;
     /**
-     * Convert a x-coordinate from internal to grid system
-     * @param xInternal - The x-coordinate in internal system
-     * @returns The corresponding x-coordinate in grid system
+     * Convert a x-coordinate from internal to grid system.
+     * @param xInternal - The x-coordinate in internal system.
+     * @returns The corresponding x-coordinate in grid system.
      */
     private _internalToGridX;
     /**
-     * Convert a y-coordinate from internal to grid system
-     * @param yInternal - The y-coordinate in internal system
-     * @returns The corresponding y-coordinate in grid system
+     * Convert a y-coordinate from internal to grid system.
+     * @param yInternal - The y-coordinate in internal system.
+     * @returns The corresponding y-coordinate in grid system.
      */
     private _internalToGridY;
     /**
-     * Convert size from internal to grid system
-     * @param sizeInternal - The size in internal system
-     * @returns The corresponding size in grid system
+     * Convert size from internal to grid system.
+     * @param sizeInternal - The size in internal system.
+     * @returns The corresponding size in grid system.
      */
     private _internalToGridSize;
     /**
-     * Get the width of the subnet in grid system
-     * @returns The width of the subnet
+     * Get the width of the subnet in grid system.
+     * @returns The width of the subnet.
      */
     getWidth(): number;
     /**
-     * Get the height of the subnet in grid system
-     * @returns The height of the subnet
+     * Get the height of the subnet in grid system.
+     * @returns The height of the subnet.
      */
     getHeight(): number;
     /**
-     * Convert a x, y grid-index to prefix in the subnet
-     * @param x - The x-index on the grid
-     * @param y - The y-index on the grid
-     * @returns The corresponding prefix if the x, y index is in the subnet's grid, undefined otherwise
+     * Convert a x, y grid-index to prefix in the subnet.
+     * @param x - The x-index on the grid.
+     * @param y - The y-index on the grid.
+     * @returns The corresponding prefix if the x, y index is in the subnet's grid, undefined otherwise.
      */
     gridPosToPrefix(x: number, y: number): Prefix | undefined;
     /**
-     * Convert a prefix to a rectangle region in the subnet
-     * @param prefix - The prefix to convert
-     * @returns The corresponding rectangle region if the prefix is in the subnet, undefined otherwise
-     *          If the prefix is smaller than a grid, the region will be the grid containing the prefix
+     * Convert a prefix to a rectangle region in the subnet.
+     * @param prefix - The prefix to convert.
+     * @returns The corresponding rectangle region if the prefix is in the subnet, undefined otherwise.
+     *          If the prefix is smaller than a grid, the region will be the grid containing the prefix.
      */
     prefixToRectRegion(prefix: Prefix): Rect | undefined;
 }

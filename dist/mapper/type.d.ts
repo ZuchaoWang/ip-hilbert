@@ -1,7 +1,7 @@
 import { Prefix } from "../prefix";
 import { Rect } from "../region";
 /**
- * Interface for the HilbertMapper that provides methods for mapping
+ * Interface for the HilbertMapper that provides methods for mapping.
  * between IP prefixes and rectangular grid regions in Hilbert curve mapping.
  */
 export interface HilbertMapper {
@@ -28,9 +28,9 @@ export interface HilbertMapper {
      */
     gridPosToPrefix: (x: number, y: number) => Prefix | undefined;
     /**
-     * Converts a prefix into a rectangular region in the grid according to the Hilbert curve
+     * Converts a prefix into a rectangular region in the grid according to the Hilbert curve.
      * Returns undefined if the provided prefix is out of range.
-     * If the prefix is smaller than a grid, the region will be the grid containing the prefix
+     * If the prefix is smaller than a grid, the region will be the grid containing the prefix.
      *
      * @param {Prefix} prefix - The IP prefix.
      * @returns {Rect | undefined} The corresponding grid region, or undefined if the prefix is out of range.

@@ -2,7 +2,7 @@
 
 # Interface: HilbertMapper
 
-Interface for the HilbertMapper that provides methods for mapping
+Interface for the HilbertMapper that provides methods for mapping.
 between IP prefixes and rectangular grid regions in Hilbert curve mapping.
 
 ## Implemented by
@@ -39,7 +39,7 @@ The height of the grid.
 
 #### Defined in
 
-[mapper/type.ts:21](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/type.ts#L21)
+[mapper/type.ts:21](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/type.ts#L21)
 
 ___
 
@@ -61,7 +61,7 @@ The width of the grid.
 
 #### Defined in
 
-[mapper/type.ts:14](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/type.ts#L14)
+[mapper/type.ts:14](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/type.ts#L14)
 
 ___
 
@@ -92,7 +92,7 @@ The corresponding Hilbert curve prefix, or undefined if out of range.
 
 #### Defined in
 
-[mapper/type.ts:32](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/type.ts#L32)
+[mapper/type.ts:32](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/type.ts#L32)
 
 ___
 
@@ -104,9 +104,9 @@ ___
 
 ▸ (`prefix`): `undefined` \| [`Rect`](Rect.md)
 
-Converts a prefix into a rectangular region in the grid according to the Hilbert curve
+Converts a prefix into a rectangular region in the grid according to the Hilbert curve.
 Returns undefined if the provided prefix is out of range.
-If the prefix is smaller than a grid, the region will be the grid containing the prefix
+If the prefix is smaller than a grid, the region will be the grid containing the prefix.
 
 ##### Parameters
 
@@ -122,4 +122,4 @@ The corresponding grid region, or undefined if the prefix is out of range.
 
 #### Defined in
 
-[mapper/type.ts:42](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/type.ts#L42)
+[mapper/type.ts:42](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/type.ts#L42)

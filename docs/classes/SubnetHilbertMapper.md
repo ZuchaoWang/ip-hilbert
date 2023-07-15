@@ -56,12 +56,12 @@ Construct a SubnetHilbertMapper.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `subnetPrefix` | [`Prefix`](../interfaces/Prefix.md) | Prefix of the subnet |
-| `gridMaskLen` | `number` | Mask length of each grid, must be even, at least as large as subnetPrefix.maskLen, but no larger than subnetPrefix.maskLen + 32 |
+| `subnetPrefix` | [`Prefix`](../interfaces/Prefix.md) | Prefix of the subnet. |
+| `gridMaskLen` | `number` | Mask length of each grid, must be even, at least as large as `subnetPrefix.maskLen`, but no larger than `subnetPrefix.maskLen + 32`. |
 
 #### Defined in
 
-[mapper/subnet.ts:74](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/subnet.ts#L74)
+[mapper/subnet.ts:74](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L74)
 
 ## Methods
 
@@ -69,13 +69,13 @@ Construct a SubnetHilbertMapper.
 
 ▸ **getHeight**(): `number`
 
-Get the height of the subnet in grid system
+Get the height of the subnet in grid system.
 
 #### Returns
 
 `number`
 
-The height of the subnet
+The height of the subnet.
 
 #### Implementation of
 
@@ -83,7 +83,7 @@ The height of the subnet
 
 #### Defined in
 
-[mapper/subnet.ts:157](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/subnet.ts#L157)
+[mapper/subnet.ts:157](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L157)
 
 ___
 
@@ -91,13 +91,13 @@ ___
 
 ▸ **getWidth**(): `number`
 
-Get the width of the subnet in grid system
+Get the width of the subnet in grid system.
 
 #### Returns
 
 `number`
 
-The width of the subnet
+The width of the subnet.
 
 #### Implementation of
 
@@ -105,7 +105,7 @@ The width of the subnet
 
 #### Defined in
 
-[mapper/subnet.ts:149](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/subnet.ts#L149)
+[mapper/subnet.ts:149](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L149)
 
 ___
 
@@ -113,20 +113,20 @@ ___
 
 ▸ **gridPosToPrefix**(`x`, `y`): `undefined` \| [`Prefix`](../interfaces/Prefix.md)
 
-Convert a x, y grid-index to prefix in the subnet
+Convert a x, y grid-index to prefix in the subnet.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `x` | `number` | The x-index on the grid |
-| `y` | `number` | The y-index on the grid |
+| `x` | `number` | The x-index on the grid. |
+| `y` | `number` | The y-index on the grid. |
 
 #### Returns
 
 `undefined` \| [`Prefix`](../interfaces/Prefix.md)
 
-The corresponding prefix if the x, y index is in the subnet's grid, undefined otherwise
+The corresponding prefix if the x, y index is in the subnet's grid, undefined otherwise.
 
 #### Implementation of
 
@@ -134,7 +134,7 @@ The corresponding prefix if the x, y index is in the subnet's grid, undefined ot
 
 #### Defined in
 
-[mapper/subnet.ts:167](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/subnet.ts#L167)
+[mapper/subnet.ts:167](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L167)
 
 ___
 
@@ -142,20 +142,20 @@ ___
 
 ▸ **prefixToRectRegion**(`prefix`): `undefined` \| [`Rect`](../interfaces/Rect.md)
 
-Convert a prefix to a rectangle region in the subnet
+Convert a prefix to a rectangle region in the subnet.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `prefix` | [`Prefix`](../interfaces/Prefix.md) | The prefix to convert |
+| `prefix` | [`Prefix`](../interfaces/Prefix.md) | The prefix to convert. |
 
 #### Returns
 
 `undefined` \| [`Rect`](../interfaces/Rect.md)
 
-The corresponding rectangle region if the prefix is in the subnet, undefined otherwise
-         If the prefix is smaller than a grid, the region will be the grid containing the prefix
+The corresponding rectangle region if the prefix is in the subnet, undefined otherwise.
+         If the prefix is smaller than a grid, the region will be the grid containing the prefix.
 
 #### Implementation of
 
@@ -163,4 +163,4 @@ The corresponding rectangle region if the prefix is in the subnet, undefined oth
 
 #### Defined in
 
-[mapper/subnet.ts:188](https://github.com/ZuchaoWang/ip-hilbert/blob/4255698/src/mapper/subnet.ts#L188)
+[mapper/subnet.ts:188](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L188)
