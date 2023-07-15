@@ -61,7 +61,7 @@ Construct a SubnetHilbertMapper.
 
 #### Defined in
 
-[mapper/subnet.ts:74](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L74)
+[mapper/subnet.ts:74](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/subnet.ts#L74)
 
 ## Methods
 
@@ -83,7 +83,7 @@ The height of the subnet.
 
 #### Defined in
 
-[mapper/subnet.ts:157](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L157)
+[mapper/subnet.ts:157](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/subnet.ts#L157)
 
 ___
 
@@ -105,7 +105,7 @@ The width of the subnet.
 
 #### Defined in
 
-[mapper/subnet.ts:149](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L149)
+[mapper/subnet.ts:149](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/subnet.ts#L149)
 
 ___
 
@@ -134,7 +134,7 @@ The corresponding prefix if the x, y index is in the subnet's grid, undefined ot
 
 #### Defined in
 
-[mapper/subnet.ts:167](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L167)
+[mapper/subnet.ts:167](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/subnet.ts#L167)
 
 ___
 
@@ -163,4 +163,4 @@ The corresponding rectangle region if the prefix is in the subnet, undefined oth
 
 #### Defined in
 
-[mapper/subnet.ts:188](https://github.com/ZuchaoWang/ip-hilbert/blob/953135d/src/mapper/subnet.ts#L188)
+[mapper/subnet.ts:188](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/subnet.ts#L188)
