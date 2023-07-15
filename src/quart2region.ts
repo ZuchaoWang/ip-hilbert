@@ -32,16 +32,16 @@ function hilbertQuartToSquareRegionOneStep(s: Square, quart: number) {
 
 /**
  * Selects one of the two immediate children rectangular regions from the parent square region `s`,
- * based on the `quart`. The `quart` must be 0 or 2.
+ * based on the `bit`. The `bit` must be 0 or 1.
  * This function creates a new rectangular region without modifying input square region.
  *
  * @param s - The parent square region.
- * @param quart - The quart (0 or 2) used to select the child rectangular region.
+ * @param bit - The bit (0 or 2) used to select the child rectangular region.
  */
-function hilbertQuartToHalfRectRegionOneStep(s: Square, quart: number): Rect {
+function hilbertBitToHalfRectRegionOneStep(s: Square, bit: number): Rect {
   const ox = cosTable[s.angle];
   const oy = sinTable[s.angle];
-  const dx = quart / 2 ? 1 : -1;
+  const dx = bit ? 1 : -1;
 
   const xc = s.xc + (s.size / 4) * (dx * s.flip * ox);
   const yc = s.yc + (s.size / 4) * (dx * s.flip * oy);
@@ -70,22 +70,22 @@ export function hilbertQuartsToSquareRegion(
 
 /**
  * Creates a descendant rectangular region from a parent square region,
- * based on the leading quarts and last quart.
+ * based on the leading quarts and last bit.
  *
  * @param s - The parent square region.
  * @param leadingQuarts - The array of quarts used to select the descendant square or rectangular region.
- * @param lastQuart - The optional last quart (undefined, 0, or 2) used to further refine the selected rectangular region.
+ * @param lastBit - The optional last bit (undefined, 0, or 1) used to further refine the selected rectangular region.
  */
 export function hilbertQuartsToRectRegion(
   s: Square,
   leadingQuarts: number[],
-  lastQuart?: number
+  lastBit?: number
 ): Rect {
   const descendantSquare = hilbertQuartsToSquareRegion(s, leadingQuarts);
-  if (lastQuart === undefined) {
+  if (lastBit === undefined) {
     return convertSquareToRect(descendantSquare);
   } else {
-    return hilbertQuartToHalfRectRegionOneStep(descendantSquare, lastQuart);
+    return hilbertBitToHalfRectRegionOneStep(descendantSquare, lastBit);
   }
 }
 

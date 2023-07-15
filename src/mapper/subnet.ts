@@ -1,4 +1,4 @@
-import { convertPrefixToQuarts, convertQuartsToBytes } from "../byte2quart";
+import { convertPrefixToQuartsAndBit, convertQuartsToBytes } from "../byte2quart";
 import { Prefix, isPrefixContain } from "../prefix";
 import { hilbertQuartsToRectRegion, hilbertQuartsToSquareRegion, hilbertXYPosToQuartsInSquareRegion } from "../quart2region";
 import { Rect, Square, isXYPosInRect } from "../region";
@@ -11,11 +11,11 @@ import { HilbertMapper } from "./type";
  * @returns The calculated reference square within internal system
  */
 function calculateRefSquareInternal(refPrefix: Prefix, gridMaskLen: number): Square {
-  const refQuarts = convertPrefixToQuarts(refPrefix, 0)!.leadingQuarts;
+  const refQuarts = convertPrefixToQuartsAndBit(refPrefix, 0)!.leadingQuarts;
   // only angle and flip are relevant, this is neither grid or internal coordinate system
   const refSquareUnitInGlobal = hilbertQuartsToSquareRegion({ xc: 1, yc: 1, size: 2, angle: 0, flip: 1 }, refQuarts);
   const gridOrderInRef = gridMaskLen / 2 - refPrefix.maskLen / 2;
-  const refSquareInternalSize = 1 << (gridOrderInRef + 1); // use twice size to preserve integer precision, hence + 1
+  const refSquareInternalSize = Math.pow(2, gridOrderInRef + 1); // use twice size to preserve integer precision, hence + 1
   return { xc: refSquareInternalSize / 2, yc: refSquareInternalSize / 2, size: refSquareInternalSize, angle: refSquareUnitInGlobal.angle, flip: refSquareUnitInGlobal.flip };
 }
 
@@ -27,8 +27,8 @@ function calculateRefSquareInternal(refPrefix: Prefix, gridMaskLen: number): Squ
  * @returns The calculated rectangle within the internal system
  */
 function calculateRectWithinRefSquareInternal(refSquareInternal: Square, numQuartsSkip: number, prefix: Prefix): Rect {
-  const { leadingQuarts, lastQuart } = convertPrefixToQuarts(prefix, numQuartsSkip)!;
-  const rectRegion = hilbertQuartsToRectRegion(refSquareInternal, leadingQuarts, lastQuart);
+  const { leadingQuarts, lastBit } = convertPrefixToQuartsAndBit(prefix, numQuartsSkip)!;
+  const rectRegion = hilbertQuartsToRectRegion(refSquareInternal, leadingQuarts, lastBit);
   return rectRegion;
 }
 
@@ -69,7 +69,7 @@ export class SubnetHilbertMapper implements HilbertMapper {
   /**
    * Construct a SubnetHilbertMapper.
    * @param subnetPrefix - Prefix of the subnet
-   * @param gridMaskLen - Mask length of each grid
+   * @param gridMaskLen - Mask length of each grid, must be even, at least as large as subnetPrefix.maskLen, but no larger than subnetPrefix.maskLen + 32
    */
   constructor(subnetPrefix: Prefix, gridMaskLen: number) {
     this._subnetPrefix = subnetPrefix;
@@ -88,8 +88,9 @@ export class SubnetHilbertMapper implements HilbertMapper {
     if (this._gridMaskLen % 2) {
       throw new Error("SubnetHilbertMapper: gridMaskLen must be even, so that each grid is a square region");
     }
-    if (this._gridMaskLen - this._subnetPrefix.maskLen > 15) {
-      throw new Error("SubnetHilbertMapper: at most show 2^15 x 2^15 grids");
+    if (this._gridMaskLen - this._subnetPrefix.maskLen > 32) {
+      // maybe we can support larger gridMaskLen, but it's not necessary now
+      throw new Error("SubnetHilbertMapper: at most show 2^32 x 2^32 grids");
     }
     if (this._gridMaskLen < this._subnetPrefix.maskLen) {
       throw new Error("SubnetHilbertMapper: gridMaskLen too small, now the prefix for each grid is even larger than the subnet");
@@ -158,21 +159,21 @@ export class SubnetHilbertMapper implements HilbertMapper {
   }
 
   /**
-   * Convert a x, y position to prefix in the subnet
-   * @param x - The x-coordinate
-   * @param y - The y-coordinate
-   * @returns The corresponding prefix if the x, y position is in the subnet, undefined otherwise
+   * Convert a x, y grid-index to prefix in the subnet
+   * @param x - The x-index on the grid
+   * @param y - The y-index on the grid
+   * @returns The corresponding prefix if the x, y index is in the subnet's grid, undefined otherwise
    */
-  xyPosToPrefix(x: number, y: number): Prefix | undefined {
+  gridPosToPrefix(x: number, y: number): Prefix | undefined {
     const xInternal = this._gridToInternalX(x);
     const yInternal = this._gridToInternalY(y);
     if (isXYPosInRect(xInternal, yInternal, this._subnetRectInternal)) {
-      const refQuarts = convertPrefixToQuarts(this._refPrefix, 0)!.leadingQuarts;
+      const refQuarts = convertPrefixToQuartsAndBit(this._refPrefix, 0)!.leadingQuarts;
       const posQuarts = hilbertXYPosToQuartsInSquareRegion(this._refSquareInternal, xInternal, yInternal, this._gridMaskLen / 2 - this._refPrefix.maskLen / 2)!;
       const tailQuarts = new Array(this._refPrefix.bytes.length * 4 - refQuarts.length - posQuarts.length).fill(0);
       const allQuarts = [...refQuarts, ...posQuarts, ...tailQuarts];
       const bytes = convertQuartsToBytes(allQuarts);
-      return { bytes, maskLen: this._refPrefix.maskLen };
+      return { bytes, maskLen: this._gridMaskLen };
     } else {
       return undefined;
     }

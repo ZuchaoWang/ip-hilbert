@@ -36,12 +36,13 @@ export function extractQuartFromBytes(bytes: number[], i: number): number | unde
  * @param {Prefix} prefix - An object containing 'bytes' representing the prefix and 'maskLen' representing the mask length.
  * @param {number} numQuartsSkip - The number of initial quarts to skip.
  * 
- * @returns {Object | undefined} An object containing 'leadingQuarts' and 'lastQuart', where 'leadingQuarts' is an array of quarts and 'lastQuart' is the last quart or undefined. 
- * If 'lastQuart' is defined, it must be 0 or 2, and indicates that the prefix corresponds to a rectangle on the Hilbert curve. 
- * If 'lastQuart' is undefined, it indicates that the prefix corresponds to a square on the Hilbert curve.
+ * @returns {Object | undefined} An object containing 'leadingQuarts' and 'lastBit', where 'leadingQuarts' is an array of quarts and 'lastBit' is the last bit or undefined. 
+ * 'lastBit' appears when prefix.maskLen is odd thus prefix cannot be represented by integer number of quarts (which requires prefix.maskLen to be even)
+ * If 'lastBit' is defined, it must be 0 (left) or 1 (right), and indicates that the prefix corresponds to a rectangle on the Hilbert curve. 
+ * If 'lastBit' is undefined, it indicates that the prefix corresponds to a square on the Hilbert curve.
  * If 'numQuartsSkip' is greater than half of 'maskLen', the function returns undefined.
  */
-export function convertPrefixToQuarts(prefix: Prefix, numQuartsSkip: number): { leadingQuarts: number[], lastQuart: number | undefined } | undefined {
+export function convertPrefixToQuartsAndBit(prefix: Prefix, numQuartsSkip: number): { leadingQuarts: number[], lastBit: number | undefined } | undefined {
   // Extracting the bytes and mask length from the prefix
   const { bytes, maskLen } = prefix;
 
@@ -59,18 +60,18 @@ export function convertPrefixToQuarts(prefix: Prefix, numQuartsSkip: number): { 
   }
 
   // If the mask length is odd and numQuartsSkip is less than half the mask length, 
-  // there will be one remaining quart. Calculate this quart and store it in lastQuart.
+  // there will be one remaining quart. Calculate this quart and store it in lastBit.
   // If the mask length is even, or numQuartsSkip is equal to half the mask length, 
-  // lastQuart will remain undefined
-  let lastQuart: number | undefined;
+  // lastBit will remain undefined
+  let lastBit: number | undefined;
   if (maskLen % 2 === 1) {
-    lastQuart = extractQuartFromBytes(bytes, Math.floor(maskLen / 2));
+    lastBit = Math.floor(extractQuartFromBytes(bytes, Math.floor(maskLen / 2))! / 2);
   }
 
-  // Return the leadingQuarts and lastQuart
-  // If lastQuart is defined, it indicates that the prefix corresponds to a rectangle on the Hilbert curve
-  // If lastQuart is undefined, it indicates that the prefix corresponds to a square on the Hilbert curve
-  return { leadingQuarts, lastQuart };
+  // Return the leadingQuarts and lastBit
+  // If lastBit is defined, it indicates that the prefix corresponds to a rectangle on the Hilbert curve
+  // If lastBit is undefined, it indicates that the prefix corresponds to a square on the Hilbert curve
+  return { leadingQuarts, lastBit };
 }
 
 /**

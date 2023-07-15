@@ -1,5 +1,5 @@
 import { SubnetHilbertMapper } from "../../src/mapper/subnet";
-import { parsePrefix } from "../utils";
+import { parsePrefix, stringifyPrefix } from "../utils";
 
 describe('SubnetHilbertMapper constructor input validation', () => {
   it("should not throw error when input is legal", () => {
@@ -10,8 +10,9 @@ describe('SubnetHilbertMapper constructor input validation', () => {
     expect(() => new SubnetHilbertMapper(parsePrefix('192.0.2.0/24'), 27)).toThrow();
   });
 
-  it('should throw error when gridMaskLen - subnetPrefix.maskLen > 15', () => {
-    expect(() => new SubnetHilbertMapper(parsePrefix('192.0.2.0/24'), 40)).toThrow();
+  it('should throw error when gridMaskLen - subnetPrefix.maskLen > 32', () => {
+    // IPv4 does not have maskLen 57, this is just to trigger the error
+    expect(() => new SubnetHilbertMapper(parsePrefix('192.0.2.0/24'), 57)).toThrow();
   });
 
   it('should throw error when gridMaskLen < subnetPrefix.maskLen', () => {
@@ -88,5 +89,110 @@ describe("SubnetHilbertMapper prefixToRectRegion for IPv6", () => {
     expect(subnetMapper.prefixToRectRegion(parsePrefix("2400::/12"))).toEqual({ x: 24, y: 0, width: 1, height: 1 });  // APNIC
     expect(subnetMapper.prefixToRectRegion(parsePrefix("2a00::/11"))).toEqual({ x: 28, y: 12, width: 1, height: 2 }); // RIPE NCC
     expect(subnetMapper.prefixToRectRegion(parsePrefix("2a04::/13"))).toEqual({ x: 28, y: 12, width: 1, height: 1 }); // within RIPE NCC
+  });
+});
+
+describe('SubnetHilbertMapper gridPosToPrefix for IPv4', () => {
+  it('should detects out of range position', () => {
+    const subnetMapper = new SubnetHilbertMapper(parsePrefix("192.0.0.0/3"), 8);
+
+    const prefixOutOfRange = subnetMapper.gridPosToPrefix(-1, -1);
+    expect(prefixOutOfRange).toBeUndefined();
+
+    const prefixInRange = subnetMapper.gridPosToPrefix(0, 1);
+    const prefixInRangeStr = stringifyPrefix(prefixInRange!);
+    expect(prefixInRangeStr).toBe("217.0.0.0/8"); // RIPE NCC
+  });
+
+  it('should pass randomized tests using prefixToRectRegion', () => {
+    const N = 100;
+    const numTotalBytes = 4;
+
+    for (let i = 0; i < N; i++) {
+      // randomly generate even gridMaskLen between 0 and 32 (inclusive)
+      const gridMaskLen = Math.floor(Math.random() * (numTotalBytes * 4 + 1)) * 2;
+
+      // randomly generate subnet prefix
+      const subnetMaskLen = Math.floor(Math.random() * (gridMaskLen + 1));
+      const subnetBytes = [];
+      for (let j = 0; j < numTotalBytes; j++) {
+        subnetBytes.push(Math.floor(Math.random() * 256));
+      }
+      const subnetPrefix = { bytes: subnetBytes, maskLen: subnetMaskLen };
+
+      // create SubnetHilbertMapper instance
+      const subnetMapper = new SubnetHilbertMapper(subnetPrefix, gridMaskLen);
+
+      // get width and height
+      const width = subnetMapper.getWidth();
+      const height = subnetMapper.getHeight();
+
+      // randomly choose x and y within width and height
+      const x = Math.floor(Math.random() * width);
+      const y = Math.floor(Math.random() * height);
+
+      // use gridPosToPrefix to get the prefix
+      const prefix = subnetMapper.gridPosToPrefix(x, y);
+
+      // use prefixToRectRegion to get back the region
+      const rectRegion = subnetMapper.prefixToRectRegion(prefix!);
+
+      // assertions
+      expect(rectRegion).toEqual({ x, y, width: 1, height: 1 });
+    }
+  });
+});
+
+describe('SubnetHilbertMapper gridPosToPrefix for IPv6', () => {
+  it('should detects out of range position', () => {
+    const subnetMapper = new SubnetHilbertMapper(parsePrefix("2000::/3"), 12);
+
+    const prefixOutOfRange = subnetMapper.gridPosToPrefix(-1, -1);
+    expect(prefixOutOfRange).toBeUndefined();
+
+    const prefixInRange = subnetMapper.gridPosToPrefix(24, 0);
+    const prefixInRangeStr = stringifyPrefix(prefixInRange!);
+    expect(prefixInRangeStr).toBe("2400::/12"); // APNIC
+  });
+
+  it('should pass randomized tests using prefixToRectRegion', () => {
+    const N = 100;
+    const numTotalBytes = 16;
+  
+    for (let i = 0; i < N; i++) {
+      // randomly generate gridMaskLen between 0 and 128 (inclusive)
+      const gridMaskLen = Math.floor(Math.random() * (numTotalBytes * 4 + 1)) * 2;
+  
+      // ensure subnetMaskLen is at least gridMaskLen-32
+      const minSubnetMaskLen = Math.max(0, gridMaskLen - 32);
+      const subnetMaskLen = Math.floor(Math.random() * (gridMaskLen - minSubnetMaskLen + 1)) + minSubnetMaskLen;
+  
+      // randomly generate subnet prefix
+      const subnetBytes = [];
+      for (let j = 0; j < numTotalBytes; j++) {
+        subnetBytes.push(Math.floor(Math.random() * 256));
+      }
+      const subnetPrefix = { bytes: subnetBytes, maskLen: subnetMaskLen };
+  
+      // create SubnetHilbertMapper instance
+      const subnetMapper = new SubnetHilbertMapper(subnetPrefix, gridMaskLen);
+  
+      // get width and height
+      const width = subnetMapper.getWidth();
+      const height = subnetMapper.getHeight();
+  
+      // randomly choose x and y within width and height
+      const x = Math.floor(Math.random() * width);
+      const y = Math.floor(Math.random() * height);
+  
+      // use gridPosToPrefix to get the prefix
+      const prefix = subnetMapper.gridPosToPrefix(x, y);
+  
+      // use prefixToRectRegion to get back the region
+      const rectRegion = subnetMapper.prefixToRectRegion(prefix!);
+    
+      // assertions
+      expect(rectRegion).toEqual({ x, y, width: 1, height: 1 });
+    }
   });
 });

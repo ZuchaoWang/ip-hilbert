@@ -153,7 +153,7 @@ describe("hilbert rect region", () => {
       width: 4,
       height: 8,
     });
-    expect(hilbertQuartsToRectRegion({ xc: 8, yc: 8, size: 16, angle: 0, flip: 1 }, [1], 2)).toEqual({
+    expect(hilbertQuartsToRectRegion({ xc: 8, yc: 8, size: 16, angle: 0, flip: 1 }, [1], 1)).toEqual({
       x: 4,
       y: 8,
       width: 4,
@@ -165,7 +165,7 @@ describe("hilbert rect region", () => {
       width: 4,
       height: 2,
     });
-    expect(hilbertQuartsToRectRegion({ xc: 8, yc: 8, size: 16, angle: 0, flip: 1 }, [2, 0], 2)).toEqual({
+    expect(hilbertQuartsToRectRegion({ xc: 8, yc: 8, size: 16, angle: 0, flip: 1 }, [2, 0], 1)).toEqual({
       x: 8,
       y: 10,
       width: 4,
@@ -193,27 +193,27 @@ describe("hilbert rect region", () => {
         flip: Math.random() < 0.5 ? -1 : 1
       };
 
-      // Determine if lastQuart is defined or undefined
-      let lastQuart: number | undefined = undefined;
+      // Determine if lastBit is defined or undefined
+      let lastBit: number | undefined = undefined;
       if (Math.random() < 0.33) {
-        lastQuart = Math.floor(Math.random() * 2) * 2;
+        lastBit = Math.floor(Math.random() * 2);
       }
 
-      // Generate leadingQuarts considering the condition of lastQuart
-      const numQuarts = lastQuart === undefined
+      // Generate leadingQuarts considering the condition of lastBit
+      const numQuarts = lastBit === undefined
         ? Math.floor(Math.random() * (order + 1))
         : Math.floor(Math.random() * order);
       const leadingQuarts = Array.from({ length: numQuarts }, () => Math.floor(Math.random() * 4));
 
       // Process quarts in one step
-      const oneStepResult = hilbertQuartsToRectRegion(initialSquare, leadingQuarts, lastQuart);
+      const oneStepResult = hilbertQuartsToRectRegion(initialSquare, leadingQuarts, lastBit);
 
       // Process quarts in two steps
       const splitPoint = Math.floor(Math.random() * leadingQuarts.length);
       const firstStepQuarts = leadingQuarts.slice(0, splitPoint);
       const secondStepQuarts = leadingQuarts.slice(splitPoint);
       const firstStepResult = hilbertQuartsToSquareRegion(initialSquare, firstStepQuarts);
-      const twoStepResult = hilbertQuartsToRectRegion(firstStepResult, secondStepQuarts, lastQuart);
+      const twoStepResult = hilbertQuartsToRectRegion(firstStepResult, secondStepQuarts, lastBit);
 
       // The result should be the same for one-step and two-step processing
       expect(oneStepResult).toEqual(twoStepResult);
