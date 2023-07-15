@@ -34,6 +34,7 @@ export interface HilbertMapper {
   /**
    * Converts a prefix into a rectangular region in the grid according to the Hilbert curve
    * Returns undefined if the provided prefix is out of range.
+   * If the prefix is smaller than a grid, the region will be the grid containing the prefix
    *
    * @param {Prefix} prefix - The Hilbert curve prefix.
    * @returns {Rect | undefined} The corresponding grid region, or undefined if the prefix is out of range.

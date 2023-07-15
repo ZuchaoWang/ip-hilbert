@@ -5,62 +5,66 @@ import { Rect, Square, isXYPosInRect } from "../region";
 import { HilbertMapper } from "./type";
 
 /**
- * Calculate the region square based on reference prefix and grid mask length
+ * Calculate the square within the internal system based on reference prefix and grid mask length
  * @param refPrefix - Reference prefix
  * @param gridMaskLen - Grid mask length
- * @returns The calculated reference square region
+ * @returns The calculated reference square within internal system
  */
-function calculateRefSquareRegion(refPrefix: Prefix, gridMaskLen: number): Square {
+function calculateRefSquareInternal(refPrefix: Prefix, gridMaskLen: number): Square {
   const refQuarts = convertPrefixToQuarts(refPrefix, 0)!.leadingQuarts;
-  const refSquareRegionInGlobal = hilbertQuartsToSquareRegion({ xc: 1, yc: 1, size: 2, angle: 0, flip: 1 }, refQuarts); // only angle and flip are relevant
+  // only angle and flip are relevant, this is neither grid or internal coordinate system
+  const refSquareUnitInGlobal = hilbertQuartsToSquareRegion({ xc: 1, yc: 1, size: 2, angle: 0, flip: 1 }, refQuarts);
   const gridOrderInRef = gridMaskLen / 2 - refPrefix.maskLen / 2;
-  const refRootRegionSize = 1 << (gridOrderInRef + 1); // use twice size to preserve integer precision, hence + 1
-  return { xc: refRootRegionSize / 2, yc: refRootRegionSize / 2, size: refRootRegionSize, angle: refSquareRegionInGlobal.angle, flip: refSquareRegionInGlobal.flip };
+  const refSquareInternalSize = 1 << (gridOrderInRef + 1); // use twice size to preserve integer precision, hence + 1
+  return { xc: refSquareInternalSize / 2, yc: refSquareInternalSize / 2, size: refSquareInternalSize, angle: refSquareUnitInGlobal.angle, flip: refSquareUnitInGlobal.flip };
 }
 
 /**
- * Calculate rectangle region within reference square region
- * @param refSquareRegion - Reference square region
+ * Calculate rectangle within the reference square of the internal system
+ * @param refSquareInternal - Reference square within the internal system
  * @param numQuartsSkip - Number of quarters to skip
  * @param prefix - Prefix to use in calculation
- * @returns The calculated rectangle region
+ * @returns The calculated rectangle within the internal system
  */
-function calculateRectRegionWithinRefSquareRegion(refSquareRegion: Square, numQuartsSkip: number, prefix: Prefix): Rect {
+function calculateRectWithinRefSquareInternal(refSquareInternal: Square, numQuartsSkip: number, prefix: Prefix): Rect {
   const { leadingQuarts, lastQuart } = convertPrefixToQuarts(prefix, numQuartsSkip)!;
-  const rectRegion = hilbertQuartsToRectRegion(refSquareRegion, leadingQuarts, lastQuart);
+  const rectRegion = hilbertQuartsToRectRegion(refSquareInternal, leadingQuarts, lastQuart);
   return rectRegion;
 }
 
 /**
- * SubnetHilbertMapper class is responsible for mapping a prefix, called a subnet, to a Hilbert curve grid map.
- * It enables focus on a specific subnet by drawing it on the map and ignoring prefixes outside the subnet.
+ * SubnetHilbertMapper class is responsible for mapping a prefix, called a subnet, 
+ * to a Hilbert curve grid map. It enables focus on a specific subnet by drawing it 
+ * on the map and ignoring prefixes outside the subnet.
  * 
- * The class provides methods to convert a prefix to a rectangular region within the subnet and a grid position 
- * back to a prefix. It also outputs the width and height of the grid map.
+ * The class provides methods to convert a prefix to a rectangular region within the subnet 
+ * and a grid position back to a prefix. It also outputs the width and height of the grid map.
  * 
  * The class maintains two coordinate systems:
  * 
- * - Grid coordinate system: This system represents the position on the Hilbert curve grid map. The entire grid map 
- *   precisely overlays the subnet. Each grid's prefix mask length is determined by `_gridMaskLen`, setting the 
- *   resolution of the mapper. Larger `_gridMaskLen` values result in a more detailed mapping.
+ * - Grid coordinate system: This system represents the position on the Hilbert curve grid map. 
+ *   The entire grid map precisely overlays the subnet. Each grid's prefix mask length is 
+ *   determined by `_gridMaskLen`, setting the resolution of the mapper. Larger `_gridMaskLen` 
+ *   values result in a more detailed mapping.
  * 
- * - Region coordinate system: This system represents the internal spatial configuration of the mapper.
- *   It exactly overlays the `_refPrefix`, which is the smallest prefix with an even mask length containing the subnet.
- *   An even mask length is required to ensure the subnet fits within a square region, simplifying computation.
- *   Additionally, the region coordinate system has twice the resolution of the grid system. This difference in scale 
- *   preserves integer precision of the center of each grid, crucial for computations involving square regions,
- *   as they track their positions using their centers (`xc`/`yc`).
+ * - Internal coordinate system: This system represents the internal spatial configuration of the mapper.
+ *   It exactly overlays the `_refPrefix`, which is the smallest prefix with an even mask length 
+ *   containing the subnet. An even mask length is required to ensure the subnet fits within a 
+ *   square region, simplifying computation. Additionally, the internal coordinate system has twice 
+ *   the resolution of the grid system. This difference in scale preserves integer precision of the 
+ *   center of each grid, crucial for computations involving square regions, as they track their 
+ *   positions using their centers (`xc`/`yc`).
  * 
- * The class transparently converts between these two coordinate systems as needed, exposing only the grid coordinate 
- * system through its interface.
+ * The class transparently converts between these two coordinate systems as needed, exposing only 
+ * the grid coordinate system through its interface.
  */
 export class SubnetHilbertMapper implements HilbertMapper {
   private _subnetPrefix: Prefix;
   private _gridMaskLen: number;
   // derived from above
   private _refPrefix: Prefix;
-  private _refSquareRegion: Square;
-  private _subnetRectRegion: Rect;
+  private _refSquareInternal: Square;
+  private _subnetRectInternal: Rect;
 
   /**
    * Construct a SubnetHilbertMapper.
@@ -73,8 +77,8 @@ export class SubnetHilbertMapper implements HilbertMapper {
     this._validateInputs();
     // calculateDerivedValues
     this._refPrefix = this._subnetPrefix.maskLen % 2 === 0 ? this._subnetPrefix : { bytes: this._subnetPrefix.bytes, maskLen: this._subnetPrefix.maskLen - 1 };
-    this._refSquareRegion = calculateRefSquareRegion(this._refPrefix, this._gridMaskLen);
-    this._subnetRectRegion = calculateRectRegionWithinRefSquareRegion(this._refSquareRegion, this._refPrefix.maskLen / 2, this._subnetPrefix);
+    this._refSquareInternal = calculateRefSquareInternal(this._refPrefix, this._gridMaskLen);
+    this._subnetRectInternal = calculateRectWithinRefSquareInternal(this._refSquareInternal, this._refPrefix.maskLen / 2, this._subnetPrefix);
   }
 
   /**
@@ -93,48 +97,48 @@ export class SubnetHilbertMapper implements HilbertMapper {
   }
 
   /**
-   * Convert a x-coordinate from grid to region
-   * @param x - The x-coordinate in grid system
-   * @returns The corresponding x-coordinate in region system
-   */
-  private _gridToRegionX(x: number): number {
-    return x * 2 + this._subnetRectRegion.x;
+ * Convert a x-coordinate from grid to internal system
+ * @param x - The x-coordinate in grid system
+ * @returns The corresponding x-coordinate in internal system
+ */
+  private _gridToInternalX(x: number): number {
+    return x * 2 + this._subnetRectInternal.x;
   }
 
   /**
-   * Convert a y-coordinate from grid to region
+   * Convert a y-coordinate from grid to internal system
    * @param y - The y-coordinate in grid system
-   * @returns The corresponding y-coordinate in region system
+   * @returns The corresponding y-coordinate in internal system
    */
-  private _gridToRegionY(y: number): number {
-    return y * 2 + this._subnetRectRegion.y;
+  private _gridToInternalY(y: number): number {
+    return y * 2 + this._subnetRectInternal.y;
   }
 
   /**
-   * Convert a x-coordinate from region to grid
-   * @param x - The x-coordinate in region system
+   * Convert a x-coordinate from internal to grid system
+   * @param xInternal - The x-coordinate in internal system
    * @returns The corresponding x-coordinate in grid system
    */
-  private _regionToGridX(x: number): number {
-    return (x - this._subnetRectRegion.x) / 2;
+  private _internalToGridX(xInternal: number): number {
+    return (xInternal - this._subnetRectInternal.x) / 2;
   }
 
   /**
-   * Convert a y-coordinate from region to grid
-   * @param y - The y-coordinate in region system
+   * Convert a y-coordinate from internal to grid system
+   * @param yInternal - The y-coordinate in internal system
    * @returns The corresponding y-coordinate in grid system
    */
-  private _regionToGridY(y: number): number {
-    return (y - this._subnetRectRegion.y) / 2;
+  private _internalToGridY(yInternal: number): number {
+    return (yInternal - this._subnetRectInternal.y) / 2;
   }
 
   /**
-   * Convert size from region to grid
-   * @param size - The size in region system
+   * Convert size from internal to grid system
+   * @param sizeInternal - The size in internal system
    * @returns The corresponding size in grid system
    */
-  private _regionToGridSize(size: number): number {
-    return size / 2;
+  private _internalToGridSize(sizeInternal: number): number {
+    return sizeInternal / 2;
   }
 
   /**
@@ -142,7 +146,7 @@ export class SubnetHilbertMapper implements HilbertMapper {
    * @returns The width of the subnet
    */
   getWidth(): number {
-    return this._regionToGridSize(this._subnetRectRegion.width);
+    return this._internalToGridSize(this._subnetRectInternal.width);
   }
 
   /**
@@ -150,7 +154,7 @@ export class SubnetHilbertMapper implements HilbertMapper {
    * @returns The height of the subnet
    */
   getHeight(): number {
-    return this._regionToGridSize(this._subnetRectRegion.height);
+    return this._internalToGridSize(this._subnetRectInternal.height);
   }
 
   /**
@@ -160,11 +164,11 @@ export class SubnetHilbertMapper implements HilbertMapper {
    * @returns The corresponding prefix if the x, y position is in the subnet, undefined otherwise
    */
   xyPosToPrefix(x: number, y: number): Prefix | undefined {
-    const x2 = this._gridToRegionX(x);
-    const y2 = this._gridToRegionY(y);
-    if (isXYPosInRect(x2, y2, this._subnetRectRegion)) {
+    const xInternal = this._gridToInternalX(x);
+    const yInternal = this._gridToInternalY(y);
+    if (isXYPosInRect(xInternal, yInternal, this._subnetRectInternal)) {
       const refQuarts = convertPrefixToQuarts(this._refPrefix, 0)!.leadingQuarts;
-      const posQuarts = hilbertXYPosToQuartsInSquareRegion(this._refSquareRegion, x2, y2, this._gridMaskLen / 2 - this._refPrefix.maskLen / 2)!;
+      const posQuarts = hilbertXYPosToQuartsInSquareRegion(this._refSquareInternal, xInternal, yInternal, this._gridMaskLen / 2 - this._refPrefix.maskLen / 2)!;
       const tailQuarts = new Array(this._refPrefix.bytes.length * 4 - refQuarts.length - posQuarts.length).fill(0);
       const allQuarts = [...refQuarts, ...posQuarts, ...tailQuarts];
       const bytes = convertQuartsToBytes(allQuarts);
@@ -178,15 +182,17 @@ export class SubnetHilbertMapper implements HilbertMapper {
    * Convert a prefix to a rectangle region in the subnet
    * @param prefix - The prefix to convert
    * @returns The corresponding rectangle region if the prefix is in the subnet, undefined otherwise
+   *          If the prefix is smaller than a grid, the region will be the grid containing the prefix
    */
   prefixToRectRegion(prefix: Prefix): Rect | undefined {
     if (isPrefixContain(this._subnetPrefix, prefix)) {
-      const rectRegion = calculateRectRegionWithinRefSquareRegion(this._refSquareRegion, this._refPrefix.maskLen / 2, prefix);
+      const largeEnoughPrefix = prefix.maskLen <= this._gridMaskLen ? prefix : { bytes: prefix.bytes, maskLen: this._gridMaskLen };
+      const rectRegion = calculateRectWithinRefSquareInternal(this._refSquareInternal, this._refPrefix.maskLen / 2, largeEnoughPrefix);
       return {
-        x: this._regionToGridX(rectRegion.x),
-        y: this._regionToGridY(rectRegion.y),
-        width: this._regionToGridSize(rectRegion.width),
-        height: this._regionToGridSize(rectRegion.height)
+        x: this._internalToGridX(rectRegion.x),
+        y: this._internalToGridY(rectRegion.y),
+        width: this._internalToGridSize(rectRegion.width),
+        height: this._internalToGridSize(rectRegion.height)
       };
     } else {
       return undefined;
