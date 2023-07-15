@@ -1,4 +1,4 @@
-import { convertPrefixToQuarts, extractQuartFromBytes } from "../src/byte2quart";
+import { convertPrefixToQuarts, convertQuartsToBytes, extractQuartFromBytes } from "../src/byte2quart";
 import { parsePrefix } from "./utils";
 
 describe("extractQuartFromBytes", () => {
@@ -153,7 +153,7 @@ describe("convertPrefixToQuarts function", () => {
       lastQuart: undefined,
     };
     expect(convertPrefixToQuarts(ipv4CIDREven, 0)).toEqual(expectedQuadEven);
-  
+
     // For IPv4 CIDR with odd mask length
     const ipv4CIDROdd = parsePrefix("192.168.0.0/15");
     const expectedQuadOdd = {
@@ -171,7 +171,7 @@ describe("convertPrefixToQuarts function", () => {
       lastQuart: undefined,
     };
     expect(convertPrefixToQuarts(ipv6CIDR, 10)).toEqual(expectedQuadIPv6);
-  
+
     // For IPv4 CIDR
     const ipv4CIDR = parsePrefix("192.168.0.0/15");
     const expectedQuadIPv4 = {
@@ -185,19 +185,43 @@ describe("convertPrefixToQuarts function", () => {
     // For IPv6 CIDR
     const ipv6CIDR = parsePrefix("2001:db8::/32");
     expect(convertPrefixToQuarts(ipv6CIDR, 100)).toBeUndefined();
-  
+
     // For IPv4 CIDR
     const ipv4CIDR = parsePrefix("192.168.0.0/16");
     expect(convertPrefixToQuarts(ipv4CIDR, 100)).toBeUndefined();
   });
-  
+
   it("should return undefined when numQuartsSkip is negative", () => {
     // For IPv6 CIDR
     const ipv6CIDR = parsePrefix("2001:db8::/32");
     expect(convertPrefixToQuarts(ipv6CIDR, -1)).toBeUndefined();
-  
+
     // For IPv4 CIDR
     const ipv4CIDR = parsePrefix("192.168.0.0/16");
     expect(convertPrefixToQuarts(ipv4CIDR, -1)).toBeUndefined();
+  });
+});
+
+describe('convertQuartsToBytes', () => {
+  it('should convert array of quarts into array of bytes correctly', () => {
+    const N = 100; // Num of random test cases
+    const M = 64; // Max number of quarts length
+    for (let i = 0; i < N; i++) {
+      const quartsLength = Math.floor(Math.random() * (M + 1));
+      const quarts: number[] = [];
+      for (let i = 0; i < quartsLength; i++) {
+        quarts.push(Math.floor(Math.random() * 4));
+      }
+
+      const bytes = convertQuartsToBytes(quarts);
+      for (let j = 0; j < bytes.length * 4; j++) {  // for each quart position in the bytes
+        const quart = extractQuartFromBytes(bytes, j);
+        if (j < quarts.length) {  // if within original array's length, should equal
+          expect(quart).toEqual(quarts[j]);
+        } else {  // otherwise should be 0
+          expect(quart).toEqual(0);
+        }
+      }
+    }
   });
 });

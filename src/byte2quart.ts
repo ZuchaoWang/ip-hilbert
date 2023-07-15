@@ -72,3 +72,23 @@ export function convertPrefixToQuarts(prefix: Prefix, numQuartsSkip: number): { 
   // If lastQuart is undefined, it indicates that the prefix corresponds to a square on the Hilbert curve
   return { leadingQuarts, lastQuart };
 }
+
+/**
+ * Converts an array of quarts (4-state units) into an array of bytes.
+ * Each byte will represent four quarts.
+ * If the number of quarts is not a multiple of 4, 0s will be padded at the end to form the last byte.
+ *
+ * @param {number[]} quarts - The array of quarts to be converted.
+ * @returns {number[]} The converted array of bytes.
+ */
+export function convertQuartsToBytes(quarts: number[]): number[] {
+  const bytes: number[] = [];
+
+  for(let i = 0; i < quarts.length; i += 4) {
+    // Creating a byte from four quarts, padding with 0 if necessary
+    const byte = (quarts[i] << 6) | ((quarts[i+1] || 0) << 4) | ((quarts[i+2] || 0) << 2) | (quarts[i+3] || 0);
+    bytes.push(byte);
+  }
+
+  return bytes;
+}
