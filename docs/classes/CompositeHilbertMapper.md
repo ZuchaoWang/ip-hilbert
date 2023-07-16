@@ -41,7 +41,7 @@ into one larger Composite.
 
 #### Defined in
 
-[mapper/composite.ts:22](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/composite.ts#L22)
+[mapper/composite.ts:22](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/composite.ts#L22)
 
 ## Methods
 
@@ -61,7 +61,7 @@ The height of the overall grid.
 
 #### Defined in
 
-[mapper/composite.ts:38](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/composite.ts#L38)
+[mapper/composite.ts:38](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/composite.ts#L38)
 
 ___
 
@@ -81,7 +81,7 @@ The width of the overall grid.
 
 #### Defined in
 
-[mapper/composite.ts:33](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/composite.ts#L33)
+[mapper/composite.ts:33](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/composite.ts#L33)
 
 ___
 
@@ -113,7 +113,7 @@ The prefix if the position can be converted, otherwise undefined.
 
 #### Defined in
 
-[mapper/composite.ts:52](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/composite.ts#L52)
+[mapper/composite.ts:52](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/composite.ts#L52)
 
 ___
 
@@ -144,4 +144,4 @@ The rectangle region if the prefix can be converted, otherwise undefined.
 
 #### Defined in
 
-[mapper/composite.ts:75](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/composite.ts#L75)
+[mapper/composite.ts:75](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/composite.ts#L75)

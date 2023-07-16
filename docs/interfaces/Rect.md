@@ -23,7 +23,7 @@ The height of the rectangle.
 
 #### Defined in
 
-[region.ts:33](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/region.ts#L33)
+[region.ts:33](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/region.ts#L33)
 
 ___
 
@@ -35,7 +35,7 @@ The width of the rectangle.
 
 #### Defined in
 
-[region.ts:32](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/region.ts#L32)
+[region.ts:32](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/region.ts#L32)
 
 ___
 
@@ -47,7 +47,7 @@ The x-coordinate of the rectangle's minimum boundary.
 
 #### Defined in
 
-[region.ts:30](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/region.ts#L30)
+[region.ts:30](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/region.ts#L30)
 
 ___
 
@@ -59,4 +59,4 @@ The y-coordinate of the rectangle's minimum boundary.
 
 #### Defined in
 
-[region.ts:31](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/region.ts#L31)
+[region.ts:31](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/region.ts#L31)

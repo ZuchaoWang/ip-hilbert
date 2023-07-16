@@ -39,7 +39,7 @@ The height of the grid.
 
 #### Defined in
 
-[mapper/type.ts:21](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/type.ts#L21)
+[mapper/type.ts:21](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/type.ts#L21)
 
 ___
 
@@ -61,7 +61,7 @@ The width of the grid.
 
 #### Defined in
 
-[mapper/type.ts:14](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/type.ts#L14)
+[mapper/type.ts:14](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/type.ts#L14)
 
 ___
 
@@ -92,7 +92,7 @@ The corresponding Hilbert curve prefix, or undefined if out of range.
 
 #### Defined in
 
-[mapper/type.ts:32](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/type.ts#L32)
+[mapper/type.ts:32](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/type.ts#L32)
 
 ___
 
@@ -122,4 +122,4 @@ The corresponding grid region, or undefined if the prefix is out of range.
 
 #### Defined in
 
-[mapper/type.ts:42](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/mapper/type.ts#L42)
+[mapper/type.ts:42](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/mapper/type.ts#L42)

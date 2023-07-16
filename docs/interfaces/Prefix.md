@@ -21,7 +21,7 @@ The byte array representation of the IP part of the prefix. It can be obtained b
 
 #### Defined in
 
-[prefix.ts:7](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/prefix.ts#L7)
+[prefix.ts:7](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/prefix.ts#L7)
 
 ___
 
@@ -33,4 +33,4 @@ The length of the mask for the prefix, ranging from 0 to the length of the bytes
 
 #### Defined in
 
-[prefix.ts:8](https://github.com/ZuchaoWang/ip-hilbert/blob/7a83986/src/prefix.ts#L8)
+[prefix.ts:8](https://github.com/ZuchaoWang/ip-hilbert/blob/b9a456d/src/prefix.ts#L8)

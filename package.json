@@ -1,6 +1,6 @@
 {
   "name": "@zuchaowang/ip-hilbert",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A library to map IPv4 and IPv6 to 2D space via Hilbert curve",
   "main": "dist/commonjs/index.js",
   "module": "dist/esm/index.js",
@@ -8,7 +8,6 @@
   "scripts": {
     "test": "jest",
     "check": "eslint src/**/*.ts tests/**/*.ts && tsc --noEmit",
-    "start": "webpack serve --mode development",
     "build-lib-esm": "shx rm -rf dist/esm && tsc --project tsconfig.build-esm.json",
     "build-lib-commonjs": "shx rm -rf dist/commonjs && tsc --project tsconfig.build-commonjs.json",
     "build-docs": "typedoc",
